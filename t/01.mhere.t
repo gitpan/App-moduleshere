@@ -18,13 +18,13 @@ EXAMPLES:
     APP_MODULES_HERE=/tmp/ mhere Carp             # copy to /tmp/
 EOF
 
-is( `$mhere`,        $usage, 'mhere without args shows usage' );
-is( `$mhere -h`,     $usage, 'mhere -h shows useage too' );
-is( `$mhere -h Foo`, $usage, 'mhere -h Foo shows usage too' );
+is( `$^X $mhere`,        $usage, 'mhere without args shows usage' );
+is( `$^X $mhere -h`,     $usage, 'mhere -h shows useage too' );
+is( `$^X $mhere -h Foo`, $usage, 'mhere -h Foo shows usage too' );
 
-is( `$mhere strict`, 'copied modules: strict' . "\n", 'mhere strict' );
+is( `$^X $mhere strict`, 'copied modules: strict' . "\n", 'mhere strict' );
 is(
-    `$mhere File::Spec::Functions`,
+    `$^X $mhere File::Spec::Functions`,
     'copied modules: File::Spec::Functions' . "\n",
     'mhere File::Spec::Functions'
 );
@@ -46,7 +46,7 @@ open $new_fh, '<', catfile( $dir, 'File', 'Spec', 'Functions.pm' ) or die $!;
 }
 
 is(
-    `$mhere strict File::Spec::Functions`,
+    `$^X $mhere strict File::Spec::Functions`,
     'copied modules: strict, File::Spec::Functions' . "\n",
     'mhere strict, File::Spec::Functions'
 );

@@ -1,5 +1,9 @@
 Revision history for App-moduleshere
 
+0.03   2010-04-24 07:38:53 CST
+
+    In tests, call `mhere' using $^X
+
 0.02   2010-04-24 06:07:05 CST
 
     Don't copy if the source and destination have the same path.
