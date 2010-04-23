@@ -1,9 +1,9 @@
 #!/usr/bin/env perl 
 use strict;
 use warnings;
-use File::Spec::Functions qw/catdir/;
+use File::Spec::Functions qw/catdir catfile rel2abs/;
 use File::Path 'mkpath';
-use File::Copy qw(copy);
+use File::Copy qw/copy/;
 @ARGV = grep { defined } @ARGV;
 undef @ARGV if grep { /^-/ } @ARGV; # force to show usage if found -
 
@@ -16,7 +16,13 @@ if (@ARGV) {
         my @parts = split /::/, $mod;
         my $inc = join( '/', @parts ) . '.pm';
         my $source = $INC{$inc};
-        warn "failed to fild source of $mod" && next unless $source;
+        warn "failed to fild source of $mod" and next unless $source;
+
+        my $dest = catfile( $to, @parts ) . '.pm';
+        warn "failed to copy $source to $dest: they are the same path"
+          and next
+          if rel2abs($source) eq rel2abs($dest);
+
         my $here =
           catdir( $to, @parts[ 0 .. $#parts - 1 ] );
         mkpath($here)
@@ -25,8 +31,13 @@ if (@ARGV) {
         copy( $source, $here ) or warn "failed to copy $source to $here: $!";
         push @success, $mod;
     }
-    print 'copied modules: ', join ', ', @success;
-    print "\n";
+    if (@success) {
+        print 'copied modules: ', join ', ', @success;
+        print "\n";
+    }
+    else {
+        print "0 modules are copied\n";
+    }
 }
 else {
     print <<'EOF';

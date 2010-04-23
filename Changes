@@ -1,5 +1,9 @@
 Revision history for App-moduleshere
 
+0.02   2010-04-24 06:07:05 CST
+
+    Don't copy if the source and destination have the same path.
+
 0.01   2010-04-24 03:19:43 CST
-     Initial release.
+    Initial release.
 

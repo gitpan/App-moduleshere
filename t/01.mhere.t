@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 9;
 use File::Temp 'tempdir';
 use FindBin;
 use File::Spec::Functions qw/catfile updir/;
@@ -49,5 +49,12 @@ is(
     `$mhere strict File::Spec::Functions`,
     'copied modules: strict, File::Spec::Functions' . "\n",
     'mhere strict, File::Spec::Functions'
+);
+
+# test if the source and the destination is the same file
+is(
+    `$^X -I$dir $mhere strict`,
+    '0 modules are copied' . "\n",
+    "don't copy if the source and destination are the same path"
 );
 

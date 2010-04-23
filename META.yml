@@ -13,4 +13,4 @@ meta-spec:
 name: App-moduleshere
 recommends: {}
 requires: {}
-version: 0.01
+version: 0.02
