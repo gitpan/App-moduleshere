@@ -22,10 +22,10 @@ is( `$^X $mhere`,        $usage, 'mhere without args shows usage' );
 is( `$^X $mhere -h`,     $usage, 'mhere -h shows useage too' );
 is( `$^X $mhere -h Foo`, $usage, 'mhere -h Foo shows usage too' );
 
-is( `$^X $mhere strict`, 'copied modules: strict' . "\n", 'mhere strict' );
+is( `$^X $mhere strict`, 'copied module(s): strict' . "\n", 'mhere strict' );
 is(
     `$^X $mhere File::Spec::Functions`,
-    'copied modules: File::Spec::Functions' . "\n",
+    'copied module(s): File::Spec::Functions' . "\n",
     'mhere File::Spec::Functions'
 );
 
@@ -47,7 +47,7 @@ open $new_fh, '<', catfile( $dir, 'File', 'Spec', 'Functions.pm' ) or die $!;
 
 is(
     `$^X $mhere strict File::Spec::Functions`,
-    'copied modules: strict, File::Spec::Functions' . "\n",
+    'copied module(s): strict, File::Spec::Functions' . "\n",
     'mhere strict, File::Spec::Functions'
 );
 

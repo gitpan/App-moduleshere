@@ -10,29 +10,40 @@ undef @ARGV if grep { /^-/ } @ARGV; # force to show usage if found -
 if (@ARGV) {
     my $to = $ENV{APP_MODULES_HERE} || '.';
     my @success;
-    for my $mod (@ARGV) {
-        eval "require $mod" or warn "failed to require $mod" and next;
-
-        my @parts = split /::/, $mod;
-        my $inc = join( '/', @parts ) . '.pm';
-        my $source = $INC{$inc};
-        warn "failed to fild source of $mod" and next unless $source;
-
-        my $dest = catfile( $to, @parts ) . '.pm';
-        warn "failed to copy $source to $dest: they are the same path"
-          and next
-          if rel2abs($source) eq rel2abs($dest);
-
-        my $here =
-          catdir( $to, @parts[ 0 .. $#parts - 1 ] );
-        mkpath($here)
-          or warn "failed to make path $here: $!" and next
-          unless -e $here;
-        copy( $source, $here ) or warn "failed to copy $source to $here: $!";
-        push @success, $mod;
+    if ( -e $to && !-d $to ) {
+        warn "failed to make path $to: it exists but not a directory\n";
     }
+    else {
+        for my $mod (@ARGV) {
+            eval "require $mod" or warn "failed to require $mod\n" and next;
+
+            my @parts = split /::/, $mod;
+            my $inc = join( '/', @parts ) . '.pm';
+            my $source = $INC{$inc};
+            warn "failed to fild source of $mod\n" and next unless $source;
+
+            my $dest = catfile( $to, @parts ) . '.pm';
+            warn "failed to copy $source to $dest: they are the same path\n"
+              and next
+              if rel2abs($source) eq rel2abs($dest);
+
+            my $here = catdir( $to, @parts[ 0 .. $#parts - 1 ] );
+            if ( -e $here && !-d $here ) {
+                warn "failed to make path $here: it exists but not a directory\n";
+                next;
+            }
+
+            mkpath($here)
+              or warn "failed to make path $here: $!\n" and next
+              unless -e $here;
+            copy( $source, $here )
+              or warn "failed to copy $source to $here: $!\n";
+            push @success, $mod;
+        }
+    }
+
     if (@success) {
-        print 'copied modules: ', join ', ', @success;
+        print 'copied module(s): ', join ', ', @success;
         print "\n";
     }
     else {

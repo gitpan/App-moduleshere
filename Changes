@@ -1,5 +1,11 @@
 Revision history for App-moduleshere
 
+0.04   2010-04-25 07:37:46 CST
+
+    Warn if we want a directory but get a plain file.
+    Warn without a line number to make the output clean.
+    Message tweak a bit
+
 0.03   2010-04-24 07:38:53 CST
 
     In tests, call `mhere' using $^X
