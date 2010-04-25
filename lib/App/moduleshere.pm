@@ -2,7 +2,7 @@ package App::moduleshere;
 
 use warnings;
 use strict;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 1;
 
@@ -17,12 +17,15 @@ App::moduleshere - copy modules(.pm) to cwd or somewhere
     mhere Carp                                    # copy Carp.pm in @INC to cwd
     mhere Carp CGI                                # copy both Carp.pm and CGI.pm
     APP_MODULES_HERE=outlib mhere Carp            # copy to outlib dir in cwd
+    mhere -l outlib Carp                          # ditto
     APP_MODULES_HERE=/tmp/ mhere Carp             # copy to /tmp/
+    mhere -l /tmp/ Carp                           # ditto
 
 =head1 DESCRIPTION
 
 This small script(C<mhere>) helps you copy modules to somewhere you like.
-by default, it will copy to your current working directory.
+The precedence order is: C<-l>, env C<APP_MODULES_HERE> and cwd.
+By default, it will copy to cwd.
 
 It's first written when I tried to trace a bug in one of my modules which 
 led me to the other module(let's call it C<Foo> here) in C<@INC>.

@@ -1,5 +1,9 @@
 Revision history for App-moduleshere
 
+0.05   2010-04-25 08:28:41 CST
+
+    Add -l cmd option to set the destination directory
+
 0.04   2010-04-25 07:37:46 CST
 
     Warn if we want a directory but get a plain file.

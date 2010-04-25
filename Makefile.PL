@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
                        'EXE_FILES' => [
                                         'bin/mhere'
                                       ],
-                       'VERSION' => '0.04',
+                       'VERSION' => '0.05',
                        'PREREQ_PM' => {},
                        'LICENSE' => 'perl'
                      );

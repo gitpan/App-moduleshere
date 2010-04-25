@@ -4,11 +4,28 @@ use warnings;
 use File::Spec::Functions qw/catdir catfile rel2abs/;
 use File::Path 'mkpath';
 use File::Copy qw/copy/;
+use Getopt::Long;
+my %args;
+GetOptions(\%args, 'help|h', 'location|l=s') or exit;
+
 @ARGV = grep { defined } @ARGV;
-undef @ARGV if grep { /^-/ } @ARGV; # force to show usage if found -
+
+if ( $args{help} || ! @ARGV ) {
+    print <<'EOF';
+USAGE: mhere Module [ ... ]
+EXAMPLES:
+    mhere Carp                                    # copy Carp.pm in @INC to cwd
+    mhere Carp CGI                                # copy both Carp.pm and CGI.pm
+    APP_MODULES_HERE=outlib mhere Carp            # copy to outlib dir in cwd
+    mhere -l outlib Carp                          # ditto
+    APP_MODULES_HERE=/tmp/ mhere Carp             # copy to /tmp/
+    mhere -l /tmp/ Carp                           # ditto
+EOF
+    exit;
+}
 
 if (@ARGV) {
-    my $to = $ENV{APP_MODULES_HERE} || '.';
+    my $to = $args{location} || $ENV{APP_MODULES_HERE} || '.';
     my @success;
     if ( -e $to && !-d $to ) {
         warn "failed to make path $to: it exists but not a directory\n";
@@ -29,7 +46,8 @@ if (@ARGV) {
 
             my $here = catdir( $to, @parts[ 0 .. $#parts - 1 ] );
             if ( -e $here && !-d $here ) {
-                warn "failed to make path $here: it exists but not a directory\n";
+                warn
+                  "failed to make path $here: it exists but not a directory\n";
                 next;
             }
 
@@ -49,14 +67,4 @@ if (@ARGV) {
     else {
         print "0 modules are copied\n";
     }
-}
-else {
-    print <<'EOF';
-USAGE: mhere Module [ ... ]
-EXAMPLES:
-    mhere Carp                                    # copy Carp.pm in @INC to cwd
-    mhere Carp CGI                                # copy both Carp.pm and CGI.pm
-    APP_MODULES_HERE=outlib mhere Carp            # copy to outlib dir in cwd
-    APP_MODULES_HERE=/tmp/ mhere Carp             # copy to /tmp/
-EOF
 }

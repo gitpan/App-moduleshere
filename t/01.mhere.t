@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 use File::Temp 'tempdir';
 use FindBin;
 use File::Spec::Functions qw/catfile updir/;
@@ -15,7 +15,9 @@ EXAMPLES:
     mhere Carp                                    # copy Carp.pm in @INC to cwd
     mhere Carp CGI                                # copy both Carp.pm and CGI.pm
     APP_MODULES_HERE=outlib mhere Carp            # copy to outlib dir in cwd
+    mhere -l outlib Carp                          # ditto
     APP_MODULES_HERE=/tmp/ mhere Carp             # copy to /tmp/
+    mhere -l /tmp/ Carp                           # ditto
 EOF
 
 is( `$^X $mhere`,        $usage, 'mhere without args shows usage' );
@@ -29,21 +31,17 @@ is(
     'mhere File::Spec::Functions'
 );
 
-open my $ori_fh, '<', $INC{'strict.pm'} or die $!;
-open my $new_fh, '<', catfile( $dir, 'strict.pm' ) or die $!;
+compare_files(
+    $INC{'strict.pm'},
+    catfile( $dir, 'strict.pm' ),
+    'copied strict.pm is indeed a copy'
+);
 
-{
-    local $/;
-    is( <$ori_fh>, <$new_fh>, 'copied strict.pm is indeed a copy' )
-}
-
-open $ori_fh, '<', $INC{'File/Spec/Functions.pm'} or die $!;
-open $new_fh, '<', catfile( $dir, 'File', 'Spec', 'Functions.pm' ) or die $!;
-
-{
-    local $/;
-    is( <$ori_fh>, <$new_fh>, 'copied File/Spec/Functions.pm is indeed a copy' )
-}
+compare_files(
+    $INC{'File/Spec/Functions.pm'},
+    catfile( $dir, 'File', 'Spec', 'Functions.pm' ),
+    'copied File/Spec/Functions.pm is indeed a copy'
+);
 
 is(
     `$^X $mhere strict File::Spec::Functions`,
@@ -57,4 +55,27 @@ is(
     '0 modules are copied' . "\n",
     "don't copy if the source and destination are the same path"
 );
+
+my $another_dir = tempdir( CLEANUP => 1 );
+is(
+    `$^X $mhere -l $another_dir strict`,
+    'copied module(s): strict' . "\n",
+    'mhere -l $another_dir strict'
+);
+compare_files(
+    $INC{'strict.pm'},
+    catfile( $another_dir, 'strict.pm' ),
+    'copied strict.pm is indeed a copy'
+);
+
+sub compare_files {
+    my ( $a, $b, $msg ) = @_;
+    open my $ori_fh, '<', $a or die $!;
+    open my $new_fh, '<', $b or die $!;
+
+    {
+        local $/;
+        is( <$ori_fh>, <$new_fh>, $msg || "$a and $b have the same content" )
+    }
+}
 
