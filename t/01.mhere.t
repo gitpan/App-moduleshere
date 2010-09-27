@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 14;
 use File::Temp 'tempdir';
 use FindBin;
 use File::Spec::Functions qw/catfile updir/;
+use Carp;
 my $mhere = catfile( $FindBin::Bin, updir, '/bin/mhere' );
 
 my $dir = tempdir( CLEANUP => 1 );
@@ -13,6 +14,7 @@ my $usage = <<'EOF';
 USAGE: mhere Module [ ... ]
 EXAMPLES:
     mhere Carp                                    # copy Carp.pm in @INC to cwd
+    mhere -r Carp                                 # copy Carp and all under it.
     mhere Carp CGI                                # copy both Carp.pm and CGI.pm
     APP_MODULES_HERE=outlib mhere Carp            # copy to outlib dir in cwd
     mhere -l outlib Carp                          # ditto
@@ -48,6 +50,25 @@ is(
     'copied module(s): strict, File::Spec::Functions' . "\n",
     'mhere strict, File::Spec::Functions'
 );
+
+is(
+    `$^X $mhere Carp -r`,
+    'copied module(s): Carp' . "\n",
+    'mhere Carp'
+);
+
+compare_files(
+    $INC{'Carp.pm'},
+    catfile( $dir, 'Carp.pm' ),
+    'copied Carp.pm is indeed a copy'
+);
+
+compare_files(
+    $INC{'Carp/Heavy.pm'},
+    catfile( $dir, 'Carp', 'Heavy.pm' ),
+    'copied Carp/Heavy.pm is indeed a copy'
+);
+
 
 # test if the source and the destination is the same file
 is(

@@ -1,5 +1,11 @@
 Revision history for App-moduleshere
 
+0.06   2010-09-27 19:28:21 CST
+
+0.06 Mon Sep 27 19:24:32 CST 2010
+    Add -r cmd option to copy modules and modules under them, e.g. 
+        "-r Carp" will copy both Carp.pm and Carp/Heavy.pm
+
 0.05   2010-04-25 08:28:41 CST
 
     Add -l cmd option to set the destination directory

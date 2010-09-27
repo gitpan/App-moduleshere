@@ -1,12 +1,15 @@
 #!/usr/bin/env perl 
 use strict;
 use warnings;
-use File::Spec::Functions qw/catdir catfile rel2abs/;
+use File::Spec::Functions qw/catdir catfile rel2abs splitpath/;
 use File::Path 'mkpath';
 use File::Copy qw/copy/;
+use File::Copy::Recursive 'rcopy';
+$File::Copy::Recursive::KeepMode = 0;
+
 use Getopt::Long;
 my %args;
-GetOptions(\%args, 'help|h', 'location|l=s') or exit;
+GetOptions(\%args, 'help|h', 'location|l=s', 'recursive|r') or exit;
 
 @ARGV = grep { defined } @ARGV;
 
@@ -15,6 +18,7 @@ if ( $args{help} || ! @ARGV ) {
 USAGE: mhere Module [ ... ]
 EXAMPLES:
     mhere Carp                                    # copy Carp.pm in @INC to cwd
+    mhere -r Carp                                 # copy Carp and all under it.
     mhere Carp CGI                                # copy both Carp.pm and CGI.pm
     APP_MODULES_HERE=outlib mhere Carp            # copy to outlib dir in cwd
     mhere -l outlib Carp                          # ditto
@@ -37,7 +41,7 @@ if (@ARGV) {
             my @parts = split /::/, $mod;
             my $inc = join( '/', @parts ) . '.pm';
             my $source = $INC{$inc};
-            warn "failed to fild source of $mod\n" and next unless $source;
+            warn "failed to find source of $mod\n" and next unless $source;
 
             my $dest = catfile( $to, @parts ) . '.pm';
             warn "failed to copy $source to $dest: they are the same path\n"
@@ -55,7 +59,17 @@ if (@ARGV) {
               or warn "failed to make path $here: $!\n" and next
               unless -e $here;
             copy( $source, $here )
-              or warn "failed to copy $source to $here: $!\n";
+              or warn "failed to copy $source to $here: $!\n" and next;
+
+            if ( $args{recursive} ) {
+                my $dir = $source;
+                $dir =~ s/\.pm$//;
+                my $last_name = (splitpath $dir)[-1];
+                if ( -e $dir ) {
+                    rcopy( $dir, catdir( $here, $last_name ) )
+                      or warn "failed to copy $dir to $here: $!\n" and next;
+                }
+            }
             push @success, $mod;
         }
     }

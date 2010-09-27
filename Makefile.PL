@@ -9,28 +9,38 @@ use ExtUtils::MakeMaker 6.31;
 
 
 my %WriteMakefileArgs = (
-                       'test' => {
-                                   'TESTS' => 't/*.t'
-                                 },
-                       'NAME' => 'App::moduleshere',
-                       'DISTNAME' => 'App-moduleshere',
-                       'CONFIGURE_REQUIRES' => {
-                                                 'ExtUtils::MakeMaker' => '6.31'
-                                               },
-                       'AUTHOR' => 'sunnavy <sunnavy@bestpractical.com>',
-                       'BUILD_REQUIRES' => {},
-                       'ABSTRACT' => 'copy modules(.pm) to cwd or somewhere',
-                       'EXE_FILES' => [
-                                        'bin/mhere'
-                                      ],
-                       'VERSION' => '0.05',
-                       'PREREQ_PM' => {},
-                       'LICENSE' => 'perl'
-                     );
+  'ABSTRACT' => 'copy modules(.pm) to cwd or somewhere',
+  'AUTHOR' => 'sunnavy <sunnavy@bestpractical.com>',
+  'BUILD_REQUIRES' => {},
+  'CONFIGURE_REQUIRES' => {
+    'ExtUtils::MakeMaker' => '6.31'
+  },
+  'DISTNAME' => 'App-moduleshere',
+  'EXE_FILES' => [
+    'bin/mhere'
+  ],
+  'LICENSE' => 'perl',
+  'NAME' => 'App::moduleshere',
+  'PREREQ_PM' => {},
+  'VERSION' => '0.06',
+  'test' => {
+    'TESTS' => 't/*.t'
+  }
+);
 
 
-delete $WriteMakefileArgs{BUILD_REQUIRES}
-  unless eval { ExtUtils::MakeMaker->VERSION(6.56) };
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
 
 delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
