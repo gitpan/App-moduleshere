@@ -6,7 +6,7 @@ use File::Temp 'tempdir';
 use FindBin;
 use File::Spec::Functions qw/catfile updir/;
 use Carp;
-my $mhere = catfile( $FindBin::Bin, updir, '/bin/mhere' );
+my $mhere = catfile( $FindBin::Bin, updir, 'bin', 'mhere' );
 
 my $dir = tempdir( CLEANUP => 1 );
 local $ENV{APP_MODULES_HERE} = $dir;
@@ -51,23 +51,23 @@ is(
     'mhere strict, File::Spec::Functions'
 );
 
-is(
-    `$^X $mhere Carp -r`,
-    'copied module(s): Carp' . "\n",
-    'mhere Carp'
-);
+SKIP: {
+    eval { require File::Copy::Recursive };
+    skip 'need File::Copy::Recursive to use -r', 3 if $@;
+    is( `$^X $mhere Carp -r`, 'copied module(s): Carp' . "\n", 'mhere Carp' );
 
-compare_files(
-    $INC{'Carp.pm'},
-    catfile( $dir, 'Carp.pm' ),
-    'copied Carp.pm is indeed a copy'
-);
+    compare_files(
+        $INC{'Carp.pm'},
+        catfile( $dir, 'Carp.pm' ),
+        'copied Carp.pm is indeed a copy'
+    );
 
-compare_files(
-    $INC{'Carp/Heavy.pm'},
-    catfile( $dir, 'Carp', 'Heavy.pm' ),
-    'copied Carp/Heavy.pm is indeed a copy'
-);
+    compare_files(
+        $INC{'Carp/Heavy.pm'},
+        catfile( $dir, 'Carp', 'Heavy.pm' ),
+        'copied Carp/Heavy.pm is indeed a copy'
+    );
+}
 
 
 # test if the source and the destination is the same file

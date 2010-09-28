@@ -4,8 +4,6 @@ use warnings;
 use File::Spec::Functions qw/catdir catfile rel2abs splitpath/;
 use File::Path 'mkpath';
 use File::Copy qw/copy/;
-use File::Copy::Recursive 'rcopy';
-$File::Copy::Recursive::KeepMode = 0;
 
 use Getopt::Long;
 my %args;
@@ -35,6 +33,17 @@ if (@ARGV) {
         warn "failed to make path $to: it exists but not a directory\n";
     }
     else {
+        if ( $args{recursive} ) {
+            eval { require File::Copy::Recursive };
+            if ( $@ ) {
+                print
+"you need to install File::Copy::Recursive to use the -r flag\n";
+                exit;
+            }
+            no warnings 'once';
+            $File::Copy::Recursive::KeepMode = 0;
+        }
+
         for my $mod (@ARGV) {
             eval "require $mod" or warn "failed to require $mod\n" and next;
 
@@ -66,7 +75,7 @@ if (@ARGV) {
                 $dir =~ s/\.pm$//;
                 my $last_name = (splitpath $dir)[-1];
                 if ( -e $dir ) {
-                    rcopy( $dir, catdir( $here, $last_name ) )
+                    File::Copy::Recursive::dircopy( $dir, catdir( $here, $last_name ) )
                       or warn "failed to copy $dir to $here: $!\n" and next;
                 }
             }

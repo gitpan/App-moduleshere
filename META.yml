@@ -12,6 +12,8 @@ meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: App-moduleshere
+recommends:
+  File::Copy::Recursive: 0
 resources:
   repository: http://github.com/bestpractical/app-moduleshere.git
-version: 0.06
+version: 0.07
