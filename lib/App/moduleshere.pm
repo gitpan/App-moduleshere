@@ -2,7 +2,7 @@ package App::moduleshere;
 
 use warnings;
 use strict;
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 1;
 
@@ -57,7 +57,7 @@ sunnavy  C<< sunnavy@bestpractical.com >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright 2010 Best Practical Solutions.
+Copyright 2010-2011 Best Practical Solutions.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

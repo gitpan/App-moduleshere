@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
   'LICENSE' => 'perl',
   'NAME' => 'App::moduleshere',
   'PREREQ_PM' => {},
-  'VERSION' => '0.07',
+  'VERSION' => '0.08',
   'test' => {
     'TESTS' => 't/*.t'
   }

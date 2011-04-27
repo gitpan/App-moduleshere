@@ -1,5 +1,9 @@
 Revision history for App-moduleshere
 
+0.08   2011-04-27 13:55:55 CST
+
+    Add --dry-run cmd option
+
 0.07   2010-09-28 09:20:17 CST
 
     code tweak
